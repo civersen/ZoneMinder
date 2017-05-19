@@ -102,7 +102,7 @@ How filters actually work
 It is useful to know how filters actually work behind the scenes in ZoneMinder, in the event you find your filter not functioning as intended:
 
 * the primary filter processing process in ZoneMinder is a perl file called ``zmfilter.pl`` 
-* zmfilter.pl runs every FILTER_EXECUTE_INTERVAL seconds (default is 20s, can be changed in Options->System)
+* zmfilter.pl runs every FILTER_EXECUTE_INTERVAL seconds (default is 60s, can be changed in Options->System)
 * in each run, it goes through all the filters which are marked as "Run in Background" and if the conditions match performs the specified action
 * zmfilter.pl also reloads all the filters every FILTER_RELOAD_DELAY seconds (default is 300s/5mins, can be changed in Options->System)
 	* So if you have just created a new filter, zmfilter will not see it till the next FILTER_RELOAD_DELAY cycle
@@ -181,7 +181,7 @@ Troubleshooting tips
 If your filter is not working, here are some useful tips:
 
 * Look at Info and Debug logs in Zoneminder 
-* Run ``sudo zmfilter.pl -f <yourfiltername>`` from command line and see the log output
+* Run ``sudo -u www-data zmfilter.pl -f <yourfiltername>`` from command line and see the log output
 * Check how long your action is taking - zmfilter.pl will wait for the action to complete before it checks again
 * If you are using relative times like 'now' or '1 year ago' etc. remember that zmfilter converts that relative time to an absolute date only when it reloads filters, which is dictated by the FILTER_RELOAD_DELAY duration. So, for example, if you are wondering why your events are not being detected before intervals of 5 minutes and you have used such a relative condition, this is why
-* In the event that you see your new filter is working great when you try it out from the Web Console (using the Submit or Execute button) but does not seem to work when its running in background mode, you might have just chanced upon a compatibility issue between how Perl and PHP translate free form text to dates/times. When you test it via the "Submit" or "Execute" button, you are invoking a PHP function for time conversion. When the filter runs in background mode, zmfilter.pl calls a perl equivalent function. In some cases, depending on the version of Perl and PHP you have, the results may vary. If you face this situation, the best thing to do is to run ``sudo zmfilter.pl -f <yourfiltername>`` from a terminal to make sure the filter actually works in Perl as well.
+* In the event that you see your new filter is working great when you try it out from the Web Console (using the Submit or Execute button) but does not seem to work when its running in background mode, you might have just chanced upon a compatibility issue between how Perl and PHP translate free form text to dates/times. When you test it via the "Submit" or "Execute" button, you are invoking a PHP function for time conversion. When the filter runs in background mode, zmfilter.pl calls a perl equivalent function. In some cases, depending on the version of Perl and PHP you have, the results may vary. If you face this situation, the best thing to do is to run ``sudo -u www-data zmfilter.pl -f <yourfiltername>`` from a terminal to make sure the filter actually works in Perl as well.
